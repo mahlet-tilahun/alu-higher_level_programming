@@ -1,8 +1,10 @@
 #!/usr/bin/python3
+""" creates class Square """
 
 
 class Square:
-    def __init__(self, size = 0):
+    """ Square class"""
+    def __init__(self, size=0):
         if type(size) != int:
             raise TypeError("size must be an integer")
         elif size < 0:
