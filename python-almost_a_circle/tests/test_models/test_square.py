@@ -1,134 +1,179 @@
 #!/usr/bin/python3
-"""Defines a class TestSquareMethods"""
-
-
-from unittest.mock import patch
+"""Unittest for Base
+"""
+import os
 import unittest
-import json
-from io import StringIO
-from models.base import Base
 from models.rectangle import Rectangle
-from models.square import Square
+import io
+import sys
 
 
-class TestSquareMethods(unittest.TestCase):
-    """ Defines tests for Square class """
+class TestMaxInteger(unittest.TestCase):
+    def test_two_arguments(self):
+        b1 = Rectangle(1, 2)
+        self.assertEqual(b1.width, 1)
+        self.assertEqual(b1.height, 2)
+        self.assertEqual(b1.x, 0)
+        self.assertEqual(b1.x, 0)
 
-    def setUp(self):
-        """ Method invoked for each test """
-        Base._Base__nb_objects = 0
+    def test_three_arguments(self):
+        b2 = Rectangle(1, 2, 3)
+        self.assertEqual(b2.x, 3)
+        self.assertEqual(b2.y, 0)
 
-    def tearDown(self):
-        """ Cleans up after each test """
-        pass
+    def test_four_arguments(self):
+        b2 = Rectangle(1, 2, 3, 4)
+        self.assertEqual(b2.x, 3)
+        self.assertEqual(b2.y, 4)
 
-    def test_new_square(self):
-        """ Test new square """
-        s1 = Square(3)
-        s2 = Square(1, 2, 3, 4)
-        self.assertEqual(s1.size, 3)
-        self.assertEqual(s1.width, 3)
-        self.assertEqual(s1.x, 0)
-        self.assertEqual(s1.y, 0)
-        self.assertEqual(s1.id, 1)
-        self.assertEqual(s2.size, 1)
-        self.assertEqual(s2.width, 1)
-        self.assertEqual(s2.x, 2)
-        self.assertEqual(s2.y, 3)
-        self.assertEqual(s2.id, 4)
+    def test_five_arguments(self):
+        b2 = Rectangle(1, 2, 3, 4, 5)
+        self.assertEqual(b2.id, 5)
 
-    def test_attributes_1(self):
-        """ Test for width and x and y types"""
-        with self.assertRaisesRegex(TypeError, "width must be an integer"):
-            Square("1")
-        with self.assertRaisesRegex(TypeError, "x must be an integer"):
-            Square(1, "2")
-        with self.assertRaisesRegex(TypeError, "y must be an integer"):
-            Square(1, 2, "3")
+    def test_width_string(self):
+        with self.assertRaises(TypeError) as err:
+            Rectangle("1", 2)
+        self.assertEqual(str(err.exception), "width must be an integer")
 
-    def test_attributes_2(self):
-        """ Test for width and height ranges"""
-        with self.assertRaisesRegex(ValueError, "width must be > 0"):
-            Square(-1)
-            Square(0)
-        with self.assertRaisesRegex(ValueError, "x must be >= 0"):
-            Square(1, -2)
-        with self.assertRaisesRegex(ValueError, "y must be >= 0"):
-            Square(1, 2, -3)
+    def test_height_string(self):
+        with self.assertRaises(TypeError) as err:
+            Rectangle(1, "2")
+        self.assertEqual(str(err.exception), "height must be an integer")
 
-    def test_constructor_no_args(self):
-        """ Tests constructor with no args """
-        with self.assertRaises(TypeError) as e:
-            r = Square()
-        s = "__init__() missing 1 required positional argument: 'size'"
-        self.assertEqual(str(e.exception), s)
+    def test_x_string(self):
+        with self.assertRaises(TypeError) as err:
+            Rectangle(1, 2, "3")
+        self.assertEqual(str(err.exception), "x must be an integer")
 
-    def test_C_constructor_many_args(self):
-        """ Tests constructor with many arguments """
-        with self.assertRaises(TypeError) as e:
-            r = Square(1, 2, 3, 4, 5)
-        s = "__init__() takes from 2 to 5 positional arguments but 6 \
-were given"
-        self.assertEqual(str(e.exception), s)
+    def test_y_string(self):
+        with self.assertRaises(TypeError) as err:
+            Rectangle(1, 2, 3, "4")
+        self.assertEqual(str(err.exception), "y must be an integer")
+    
+    def test_width_zero(self):
+        with self.assertRaises(ValueError) as err:
+            Rectangle(0, 2)
+        self.assertEqual(str(err.exception), "width must be > 0")
 
-    def test_is_Rectangle_instance(self):
-        """ Test Square is a Rectangle instance """
-        s1 = Square(1)
-        self.assertEqual(True, isinstance(s1, Rectangle))
-
+    def test_height_zero(self):
+        with self.assertRaises(ValueError) as err:
+            Rectangle(1, 0)
+        self.assertEqual(str(err.exception), "height must be > 0")
+    
     def test_area(self):
-        """ Test area method """
-        s1 = Square(4)
-        self.assertEqual(s1.area(), 16)
-
-    def test_area_2(self):
-        """ Test area method after modifying size """
-        r1 = Square(4)
-        self.assertEqual(r1.area(), 16)
-        r1.size = 9
-        self.assertEqual(r1.area(), 81)
-
-    def test_area_no_args(self):
-        """ Test area method with no arguments"""
-        r = Square(5)
-        with self.assertRaises(TypeError) as e:
-            Square.area()
-        s = "area() missing 1 required positional argument: 'self'"
-        self.assertEqual(str(e.exception), s)
-
-    def test_load_from_file(self):
-        """ Test load JSON file """
-        load_file = Square.load_from_file()
-        self.assertEqual(load_file, load_file)
-
-    def test_basic_display(self):
-        """ Test display without x and y """
-        s1 = Square(6)
-        result = "######\n######\n######\n######\n######\n######\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            s1.display()
-            self.assertEqual(str_out.getvalue(), result)
-
-    def test_display_no_args(self):
-        """ Test display method with no arguments """
-        r = Square(9)
-        with self.assertRaises(TypeError) as e:
-            Square.display()
-        s = "display() missing 1 required positional argument: 'self'"
-        self.assertEqual(str(e.exception), s)
-
+        obj = Rectangle(2, 2)
+        self.assertEqual(obj.area(), 4)
+        
     def test_str(self):
-        """ Test __str__ return value """
-        s1 = Square(3, 1, 3)
-        result = "[Square] (1) 1/3 - 3\n"
-        with patch('sys.stdout', new=StringIO()) as str_out:
-            print(s1)
-            self.assertEqual(str_out.getvalue(), result)
+        obj = Rectangle(2, 2, 2, 2, 10)
+        self.assertEqual(obj.__str__(), "[Rectangle] (10) 2/2 - 2/2")
+      
+    def test_display_no_xy(self):
+        obj = Rectangle(2, 2)
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        obj.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(captured_output.getvalue(), "##\n##\n")
 
-    def test_str_no_args(self):
-        """ Tests __str__ method with no arguments """
-        r = Square(5, 2)
-        with self.assertRaises(TypeError) as e:
-            Square.__str__()
-        s = "__str__() missing 1 required positional argument: 'self'"
-        self.assertEqual(str(e.exception), s)
+    def test_display_no_y(self):
+        obj = Rectangle(2, 2, 2)
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        obj.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(captured_output.getvalue(), "  ##\n  ##\n")
+        
+    def test_display(self):
+        obj = Rectangle(2, 2, 2, 2)
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        obj.display()
+        sys.stdout = sys.__stdout__
+        self.assertEqual(captured_output.getvalue(), "\n\n  ##\n  ##\n")
+    
+    def test_to_dict(self):
+        obj = Rectangle(2, 2, 2, 2, 100)
+        self.assertEqual(obj.to_dictionary(), {'height': 2, 'id': 100, 'width': 2, 'x': 2, 'y': 2})
+    
+    def test_update_empty(self):
+        obj = Rectangle(2, 2)
+        obj.update()
+        self.assertEqual(obj.width, 2)
+
+    def test_update_one_arg(self):
+        obj = Rectangle(2, 2)
+        obj.update(89)
+        self.assertEqual(obj.id, 89)
+
+    def test_update_two_arg(self):
+        obj = Rectangle(2, 2)
+        obj.update(89, 1)
+        self.assertEqual(obj.width, 1)
+
+    def test_update_three_arg(self):
+        obj = Rectangle(2, 2)
+        obj.update(89, 1, 2)
+        self.assertEqual(obj.height, 2)
+
+    def test_update_four_arg(self):
+        obj = Rectangle(2, 2)
+        obj.update(89, 1, 2, 3)
+        self.assertEqual(obj.x, 3)
+
+    def test_update_five_arg(self):
+        obj = Rectangle(2, 2)
+        obj.update(89, 1, 2, 3, 4)
+        self.assertEqual(obj.y, 4)
+        
+    def test_create_one_kwarg(self):
+        obj = Rectangle.create(**{ 'id': 89 })
+        self.assertEqual(obj.id, 89)
+
+    def test_create_two_kwarg(self):
+        obj = Rectangle.create(**{ 'id': 89, 'width': 1 })
+        self.assertEqual(obj.width, 1)
+
+    def test_create_three_kwarg(self):
+        obj = Rectangle.create(**{ 'id': 89, 'width': 1, 'height': 2 })
+        self.assertEqual(obj.height, 2)
+
+    def test_create_four_kwarg(self):
+        obj = Rectangle.create(**{ 'id': 89, 'width': 1, 'height': 2, 'x': 3 })
+        self.assertEqual(obj.x, 3)
+
+    def test_create_five_kwarg(self):
+        obj = Rectangle.create(**{ 'id': 89, 'width': 1, 'height': 2, 'x': 3, 'y': 4 })
+        self.assertEqual(obj.y, 4)
+    
+    def test_save_to_file_None(self):
+        if os.path.exists("Rectangle.json"):
+            os.remove("Rectangle.json")
+            
+        Rectangle.save_to_file(None)
+        with open("Rectangle.json", "r") as file:
+            self.assertEqual(file.read(), '[]')
+    
+    def test_save_to_file_empty(self):
+        if os.path.exists("Rectangle.json"):
+            os.remove("Rectangle.json")
+        Rectangle.save_to_file([])
+        with open("Rectangle.json", "r") as file:
+            self.assertEqual(file.read(), '[]')
+    
+    def test_save_to_file_two_arg(self):
+        if os.path.exists("Rectangle.json"):
+            os.remove("Rectangle.json")
+        Rectangle.save_to_file([Rectangle(1, 2)])
+        with open("Rectangle.json", "r") as file:
+            self.assertEqual(file.read(), '[{"id": 23, "width": 1, "height": 2, "x": 0, "y": 0}]')
+    
+    def test_load_from_file(self):
+        if os.path.exists("Rectangle.json"):
+            os.remove("Rectangle.json")
+        Rectangle.save_to_file([Rectangle(1, 2)])
+        objs = Rectangle.load_from_file()
+        self.assertEqual([i.to_dictionary() for i in objs], [{"id": 21, "width": 1, "height": 2, "x": 0, "y": 0}])
+        
+if __name__ == '__main__':
+    unittest.main()       
