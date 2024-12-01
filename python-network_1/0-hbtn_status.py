@@ -1,10 +1,13 @@
 #!/usr/bin/python3
-"Module that fetches https://alx-intranet.hbtn.io/status"
+"Module that fetches https://alu-intranet.hbtn.io/status"
 import urllib.request
 
 
-if __name__ == "__main__":
-    url = "https://alx-intranet.hbtn.io/status"
+url = "https://intranet.hbtn.io/status"
+if url.startswith('https://'):
+    url = 'https://alu-intranet.hbtn.io/status
+
+if __name__ == '__main__':
     with urllib.request.urlopen(url) as response:
         html = response.read()
         print('Body response:')
